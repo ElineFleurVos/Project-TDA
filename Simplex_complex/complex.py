@@ -29,44 +29,38 @@ dummy_connections = [(1), (2, 4), (7, 8, 9), (3), (5)]
 # ----------------
 
 # Helper function to draw all points
-def drawPoint(x, y):
+def drawPoint(point):
     # Multiplication so that dummy data places correctly on the window.
-    x_point = x * screen_width 
-    y_point = y * screen_height
+    x_point = point[0] * screen_width 
+    y_point = point[1] * screen_height
     pygame.draw.circle(window, (0, 0, 0), [x_point, y_point], 5, 0)  
-
-# Helper function for use in the PyGame parameters
-def getCoordinateTuple(x, y):
-    return (x * screen_width, y * screen_height)
+    
+def drawLine(point1, point2):
+    start_pos = (point1[0] * screen_width, point1[1] * screen_height )
+    end_pos = (point2[0] * screen_width, point2[1] * screen_height )
+    pygame.draw.line(window, (255, 0, 255), start_pos, end_pos, 5)
+    
+def drawTriangle(point1, point2, point3):
+    p1 = (point1[0] * screen_width, point1[1] * screen_height)
+    p2 = (point2[0] * screen_width, point2[1] * screen_height)
+    p3 = (point3[0] * screen_width, point3[1] * screen_height)
+    pygame.draw.polygon(window, (25, 25, 255), [p1, p2, p3], 5)
 
 def draw(points, simplices):
-    # Split coordinate tuples into x and y
-    x = []
-    y = []
-    for i in points:
-        x.append(i[0])
-        y.append(i[1])
-    
     # 'i' are the tuples
     for i in simplices:
         # If size == 1, only draw point.
         # If size == 2, draw points, and a line.
         # If size == 3, draw points, and a triangle
         if isinstance(i, int):
-            drawPoint(x[i], y[i])
+            drawPoint(points[i])
         if isinstance(i, tuple):
             for j in i:
-                drawPoint(x[j], y[j])
+                drawPoint(points[j])
             if len(i) == 2:
-                start_pos = getCoordinateTuple(x[i[0]], y[i[0]])
-                end_pos = getCoordinateTuple(x[i[1]], y[i[1]])
-                pygame.draw.line(window, (255, 0, 255), start_pos, end_pos, 5)
+                drawLine(points[i[0]], points[i[1]])
             else:
-                p1 = getCoordinateTuple(x[i[0]], y[i[0]])
-                p2 = getCoordinateTuple(x[i[1]], y[i[1]])
-                p3 = getCoordinateTuple(x[i[2]], y[i[2]])
-                pygame.draw.polygon(window, (25, 25, 255), [p1, p2, p3], 5)
-                pass
+                drawTriangle(points[i[0]], points[i[1]], points[i[2]])
             
     # Draws the surface objects to the screen.    
     pygame.display.update()
