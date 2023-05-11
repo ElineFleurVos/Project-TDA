@@ -1,39 +1,46 @@
 import pygame
-import numpy as np
 import random
-from pygame.locals import *
  
 pygame.init()
 
+# Code adjusts to screensize. Adjust as you like.
 screen_width = 800
 screen_height = 600
 screen_size = (screen_width, screen_height)
 window = pygame.display.set_mode(screen_size)
 
-pygame.display.set_caption("Simplices Complex")
+pygame.display.set_caption("Simplicial Complex")
  
 # Fill the screen with white color
 window.fill((255, 255, 255))
 
-# x, y range from 0-1
-# note that (0, 0) is in the top left in PyGame
-# Transformation/Mapping of actual data might be necessary
+# ----------------
+# Dummy Data
+# Note 1: The dummy data has x, y range from 0-1. Actual data might
+# have a different domain/range which impact the view, thus
+# transformation/mapping of actual data might be necessary
+# Note 2: In PyGame (0, 0) is in the top left 
 dummy_points = []
 for _ in range(20):
     dummy_points.append((random.random(), random.random()))
 dummy_points = dummy_points 
 
 dummy_connections = [(1), (2, 4), (7, 8, 9), (3), (5)]
+# ----------------
 
+# Helper function to draw all points
 def drawPoint(x, y):
+    # Multiplication so that dummy data places correctly on the window.
     x_point = x * screen_width 
     y_point = y * screen_height
     pygame.draw.circle(window, (0, 0, 0), [x_point, y_point], 5, 0)  
 
+# Helper function for use in the PyGame parameters
 def getCoordinateTuple(x, y):
     return (x * screen_width, y * screen_height)
 
 def draw(points, simplices):
+    # Split coordinate tuples into x and y
     x = []
     y = []
     for i in points:
@@ -42,6 +49,9 @@ def draw(points, simplices):
     
     # 'i' are the tuples
     for i in simplices:
+        # If size == 1, only draw point.
+        # If size == 2, draw points, and a line.
+        # If size == 3, draw points, and a triangle
         if isinstance(i, int):
             drawPoint(x[i], y[i])
         if isinstance(i, tuple):
@@ -61,5 +71,6 @@ def draw(points, simplices):
     # Draws the surface objects to the screen.    
     pygame.display.update()
 
+# Call draw to test program
 draw(dummy_points, dummy_connections)
  
