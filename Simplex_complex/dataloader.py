@@ -19,6 +19,7 @@ class DataPoint:
     DateTime: datetime
     Time: time
     TimeDelta: timedelta
+    IsFinalPoint: bool
 
 
 # Mijn dank aan ChatGPT voor deze functie
@@ -35,6 +36,7 @@ def convert_days_to_datetime(days):
 def getPointsInFile(path, max_points=-1):
     points = []
     r = 0
+    time_offset = timedelta(0),
     with open(path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in reader:
@@ -42,19 +44,25 @@ def getPointsInFile(path, max_points=-1):
                 date = convert_days_to_datetime(float(row[4]))
                 lat = float(row[0])
                 long = float(row[1])
+
+                if len(points) == 0:
+                    time_offset = datetime.combine(date.min, date.time()) - datetime.min
+
                 points.append(DataPoint(
                     -1,
                     long,
                     lat,
-                    Vector2(lat, long),
+                    Vector2(long, -lat),
                     date,
                     date.time(),
-                    datetime.combine(date.min, date.time()) - datetime.min))
+                    datetime.combine(date.min, date.time()) - datetime.min - time_offset,
+                    False)),
             r += 1
 
             if max_points != -1 and len(points) >= max_points:
                 return points
 
+    points[len(points) - 1].IsFinalPoint = True
     return points
 
 
@@ -72,7 +80,7 @@ def loadPoints(count, max_distance_between_datapoints):
         filePoints = getPointsInFile(pltPaths[f])
         valid = True
 
-        for i in range(len(filePoints)-1):
+        for i in range(len(filePoints) - 1):
             if distance(filePoints[i], filePoints[i + 1]) > max_distance_between_datapoints:
                 valid = False
                 break
@@ -115,5 +123,32 @@ def refilter_data(lat, long, radius, time_interval_start: timedelta, time_interv
             shutil.copy2(path, 'FilteredData')
 
 
+def refilter_data(lat, long, radius):
+    pltPaths = glob.glob(os.getcwd() + '\\Data\\**\\*.plt', recursive=True)
+    center = Vector2(long, -lat)
+    if os.path.isdir('FilteredData'):
+        shutil.rmtree('FilteredData')
+
+    os.mkdir('FilteredData')
+    for path in pltPaths:
+        # points = getPointsInFile(path)
+        # p1=  points[len(points)-1]
+        p1 = getPointsInFile(path, 1)[0]
+        if center.distance_to(p1.LatLongVector) < radius:
+            shutil.copy2(path, 'FilteredData')
 
 
+def refilter_data(filter_left_top: Vector2, filter_right_bottom: Vector2):
+    pltPaths = glob.glob(os.getcwd() + '\\Data\\**\\*.plt', recursive=True)
+    if os.path.isdir('FilteredData'):
+        shutil.rmtree('FilteredData')
+
+    os.mkdir('FilteredData')
+    for path in pltPaths:
+        # points = getPointsInFile(path)
+        # p1=  points[len(points)-1]
+        for p in getPointsInFile(path, 1):
+            if (filter_left_top.x <= p.LatLongVector.x <= filter_right_bottom.x and
+                    filter_left_top.y <= p.LatLongVector.y <= filter_right_bottom.y):
+                shutil.copy2(path, 'FilteredData')
+                break

@@ -55,14 +55,11 @@ def setupNX(graph):
     graph.layout = kamada_kawai_layout(graph.nx_graph)
 
 
-def draw_graph(graph: Graph, current_visible_slot, offset):
-    for i in range(1):
-        update_graph(graph)
-
+def draw_graph_edges(graph: Graph, offset):
     for connection in graph.connections:
         pygame.draw.line(shared.window, (155, 155, 155), offset + connection.A.position,
                          offset + connection.B.position, 5)
-
+def draw_graph_points(graph: Graph, current_visible_slot, offset):
     for p in graph.points:
         if p.time_slot == current_visible_slot:
             pygame.draw.circle(shared.window, (255, 255, 255), offset + p.position, 10)
@@ -70,11 +67,6 @@ def draw_graph(graph: Graph, current_visible_slot, offset):
         pygame.draw.circle(shared.window,
                            drawUtils.get_datapoint_index_color(p.representative + len(p.time_slot.points)),
                            offset + p.position, 8)
-
-        # save = saves[hour * 60 + math.floor(min)]
-        # if p.Representative in save[2] and p.SaveIndex == hour * 60 + math.floor(min):
-        #     pygame.draw.circle(window, (25, 25, 25), offset + p.position * scale, 14, 4)
-
 
 def update_graph(graph):
     if graph.behaviour == 'physics' or graph.behaviour == 'time_physics':

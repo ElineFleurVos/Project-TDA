@@ -2,12 +2,13 @@ import pygame
 from pygame import Vector2
 
 
+
 def to_screen(p: Vector2, camera):
     return (p - camera.center) * camera.zoom + (camera.screen_size / 2)
 
 
 def get_datapoint_index_color(index):
-    return pygame.Color(index * 25 % 255, index * 1 % 255, index * 7 % 255)
+    return pygame.Color(index * 125 % 255, index * 1231 % 255, index * 7 % 255)
 
 
 pygame.init()
