@@ -1,5 +1,6 @@
 import math
 import random
+from datetime import timedelta
 
 import networkx
 import pygame
@@ -15,6 +16,7 @@ class GraphPoint:
     pull_factor: float = 0
     representative: int
     time_slot: any
+    representing_points_count: float = 1
     position: Vector2 = Vector2(0, 0)
     velocity: Vector2 = Vector2(0, 0)
 
@@ -45,28 +47,51 @@ def remove_all_except_largest_component(graph):
 
 
 def setupNX(graph):
+    dist = {}
     graph.nx_graph = networkx.Graph()
     for p in graph.points:
         graph.nx_graph.add_node(p)
+
+    for p in graph.points:
+        dist[p] = {}
+        for p2 in graph.points:
+            dist[p][p2] = abs(
+                p.time_slot.start_time.total_seconds() - p2.time_slot.start_time.total_seconds()) / 1000. + 1
+
     for c in graph.connections:
         graph.nx_graph.add_edge(c.A, c.B)
+        # dist[c.A][c.B] = (c.A.node_size + c.B.node_size)/1000.0
+        # dist[c.A][c.B] = dist[c.B][c.A]
 
     remove_all_except_largest_component(graph.nx_graph)
     graph.layout = kamada_kawai_layout(graph.nx_graph)
+    # graph.layout = kamada_kawai_layout(graph.nx_graph, dist=dist)
 
 
 def draw_graph_edges(graph: Graph, offset):
     for connection in graph.connections:
         pygame.draw.line(shared.window, (155, 155, 155), offset + connection.A.position,
                          offset + connection.B.position, 5)
-def draw_graph_points(graph: Graph, current_visible_slot, offset):
+
+
+def draw_graph_points(graph: Graph, current_visible_slot, offset, useWeightColors):
     for p in graph.points:
         if p.time_slot == current_visible_slot:
-            pygame.draw.circle(shared.window, (255, 255, 255), offset + p.position, 10)
+            pygame.draw.circle(shared.window, (255, 255, 255), offset + p.position, 14)
+            pygame.draw.circle(shared.window, (0, 0, 0), offset + p.position, 12)
 
+        color = drawUtils.get_datapoint_index_color(p.representative + len(p.time_slot.points))
+        if useWeightColors:
+            intensitiy = p.representing_points_count / graph.points[0].representing_points_count
+            intensitiy = math.sqrt(intensitiy)
+            intensitiy = math.sqrt(intensitiy)
+            intensitiy = math.sqrt(intensitiy)
+
+            color = (min(255, int(intensitiy * 255)), int(255 - intensitiy * 255), int(255 - intensitiy * 255))
         pygame.draw.circle(shared.window,
-                           drawUtils.get_datapoint_index_color(p.representative + len(p.time_slot.points)),
-                           offset + p.position, 8)
+                           color,
+                           offset + p.position, 10)
+
 
 def update_graph(graph):
     if graph.behaviour == 'physics' or graph.behaviour == 'time_physics':
@@ -113,9 +138,9 @@ def update_graph(graph):
         i = 0
         for p in graph.points:
             if p in graph.nx_graph:
-                p.position = Vector2(graph.layout[p][0],graph.layout[p][1]) * 400
+                p.position = Vector2(graph.layout[p][0], graph.layout[p][1]) * 400
                 p.position[0] += 500
                 p.position[1] += 600
             else:
-                i+=1
-                p.position = Vector2(50 + 3*i, 50)
+                i += 1
+                p.position = Vector2(50 + 3 * i, 50)

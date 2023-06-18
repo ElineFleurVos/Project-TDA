@@ -36,6 +36,7 @@ class Scene:
     draw_point_cloud_all: bool = False
     draw_filter_rect: bool = True
     draw_graph_points: bool = False
+    draw_graph_points_weighted: bool = False
     draw_graph_edges: bool = False
     graph_behaviour: str = 'map'
     view_name_show_timeslot: bool = False
@@ -51,6 +52,7 @@ class Scene:
         self.draw_alpha_complex = False
         self.draw_filter_rect = True
         self.draw_graph_points = False
+        self.draw_graph_points_weighted = False
         self.draw_graph_edges = False
         self.view_name_show_timeslot = False
         self.graph_behaviour = 'map'
@@ -123,11 +125,15 @@ def setup_slots():
     for s in slots:
         groups = {}
         for index in s.group_representative_lookup:
-            groups[s.group_representative_lookup[index]] = 1
+            if s.group_representative_lookup[index] in groups:
+                groups[s.group_representative_lookup[index]] = groups[s.group_representative_lookup[index]] + 1
+            else:
+                groups[s.group_representative_lookup[index]] = 1
 
         for g in groups:
             gp = GraphPoint()
             gp.representative = g
+            gp.representing_points_count = groups[g]
             gp.position = Vector2(random.randint(-100, 100), random.randint(-100, 100)) / 100
             gp.time_slot = s
             graph.points.append(gp)
@@ -298,7 +304,11 @@ def update():
         draw_graph_edges(graph, graph_offset)
 
     if scene.draw_graph_points:
-        draw_graph_points(graph, slots[current_slot_index], graph_offset)
+        draw_graph_points(graph, slots[current_slot_index], graph_offset, False)
+
+    if scene.draw_graph_points_weighted:
+        draw_graph_points(graph, slots[current_slot_index], graph_offset, True)
+
 
     screen.set_clip([Vector2(0, 0), Vector2(w, h)])
 
@@ -411,6 +421,16 @@ def update_input():
         scene.right_view_name = 'Graph (networkx \'Kamada\' layout)'
         scene.view_name_show_timeslot = True
         scene.draw_graph_points = True
+        scene.draw_graph_edges = True
+        scene.split_mode = True
+        scene.draw_alpha_complex_connected = True
+        scene.graph_behaviour = 'networkx'
+    if keys[pygame.K_9] and not lastPressed[pygame.K_9]:
+        scene.reset()
+        scene.view_name = 'Connected components'
+        scene.right_view_name = 'Graph (weighted)'
+        scene.view_name_show_timeslot = True
+        scene.draw_graph_points_weighted = True
         scene.draw_graph_edges = True
         scene.split_mode = True
         scene.draw_alpha_complex_connected = True

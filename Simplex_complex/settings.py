@@ -4,15 +4,19 @@ from pygame import Vector2
 
 window_start_size = Vector2(1920, 1080)
 # analysis_time_slot_start_time = timedelta(hours=11, minutes=0)
-analysis_time_slot_end_time = timedelta(hours=1, minutes=0)
-analysis_time_slot_interval = timedelta(minutes=3)
-analysis_time_slot_interval_padding = timedelta(minutes=1)
+analysis_time_slot_end_time = timedelta(hours=1, minutes=30)
+analysis_time_slot_interval = timedelta(minutes=5)
+analysis_time_slot_interval_padding = timedelta(minutes=3)
 
 # these values are in long/lat degrees.
-alpha_complex_filtration_value = .00002
-max_distance_between_datapoints = .01
-refilter_data: bool = True
+alpha_complex_filtration_value = .0000006
 
 #Vectors are in (lat, -long)
-filter_left_top = Vector2(116.30675027472009, -39.97247810644602)
-filter_right_bottom = Vector2(116.32350518435274, -39.956727502363265)
+refilter_data: bool = True
+max_distance_between_datapoints = .001
+filter_left_top = Vector2(116.3042592145297, -39.99760917976811)
+filter_right_bottom = Vector2(116.31635444177587, -39.985175353300555)
+
+# campus??
+# filter_left_top = Vector2(116.30675027472009, -39.97247810644602)
+# filter_right_bottom = Vector2(116.32350518435274, -39.956727502363265)
