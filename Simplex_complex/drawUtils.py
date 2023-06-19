@@ -8,7 +8,7 @@ def to_screen(p: Vector2, camera):
 
 
 def get_datapoint_index_color(index):
-    return pygame.Color(index * 125 % 255, index * 1231 % 255, index * 7 % 255)
+    return pygame.Color(index * 125 % 245, index * 1231 % 225, index * 7 % 205)
 
 
 pygame.init()

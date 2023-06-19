@@ -33,14 +33,14 @@ class Scene:
     draw_point_cloud_timeslot: bool = False
     draw_alpha_complex_connected: bool = False
     draw_alpha_complex: bool = False
-    draw_point_cloud_all: bool = False
+    draw_point_cloud_all: bool = True
     draw_filter_rect: bool = True
     draw_graph_points: bool = False
     draw_graph_points_weighted: bool = False
     draw_graph_edges: bool = False
     graph_behaviour: str = 'map'
     view_name_show_timeslot: bool = False
-    view_name: str = ''
+    view_name: str = 'Point cloud (all filtered points)'
     right_view_name: str = ''
 
     split_mode = False
@@ -243,8 +243,8 @@ def scale_image(image, zoom):
 
 lt = drawUtils.to_screen(Vector2(116.22867375128897, -39.996050506192795), shared.camera)
 rb = drawUtils.to_screen(Vector2(116.40451027675331, 39.90964512539726), shared.camera)
-ori = pygame.image.load("map.png").convert_alpha()
-map = scale_image(ori, ((rb.x - lt.x) / float(ori.get_width())))
+# ori = pygame.image.load("map.png").convert_alpha()
+# map = scale_image(ori, ((rb.x - lt.x) / float(ori.get_width())))
 
 
 def update():
@@ -315,7 +315,11 @@ def update():
     title = scene.view_name
     if scene.view_name_show_timeslot:
         title += ' [' + str(current_slot.start_time)[:-3] + ' - ' + str(current_slot.end_time)[:-3] + ']'
+        line_start = Vector2(50, h - 50)
+        line_end = Vector2(50 + 400, h - 50)
 
+        pygame.draw.line(shared.window, (255,255,255), line_start, line_end, width=8)
+        pygame.draw.circle(shared.window, (255,255,255), line_start.lerp(line_end, (float(current_slot_index) / (len(slots)-1))), 16)
     drawUtils.text_to_screen(shared.window, title, 50, 50,
                              (255, 255, 255), drawUtils.font_clock)
 
