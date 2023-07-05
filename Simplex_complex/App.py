@@ -109,8 +109,8 @@ def setup_slots():
             if s.start_time < p.TimeDelta < s.end_time:
                 s.points.append(p)
 
-            # if p.IsFinalPoint and p.TimeDelta < s.start_time:
-            #     s.points.append(p)
+            # if settings.filter_end_points and p.IsFinalPoint and p.TimeDelta < s.start_time:
+            #      s.points.append(p)
 
     print('generating complexes...')
     for s in slots:
@@ -165,7 +165,7 @@ def setup_slots():
 
 
 def load_datapoints():
-    for p in dataloader.loadPoints(10000000, settings.max_distance_between_datapoints):
+    for p in dataloader.loadPoints(100000000, settings.max_distance_between_datapoints):
         datapoints.append(p)
     print(str(len(datapoints)) + ' points loaded')
 
@@ -173,7 +173,7 @@ def load_datapoints():
 def setup():
     if settings.refilter_data:
         print('filtering data ...')
-        dataloader.refilter_data(settings.filter_left_top, settings.filter_right_bottom)
+        dataloader.refilter_data(settings.filter_left_top, settings.filter_right_bottom, settings.filter_end_points)
     load_datapoints()
     setup_slots()
 

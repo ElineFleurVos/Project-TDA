@@ -87,7 +87,7 @@ def draw_graph_points(graph: Graph, current_visible_slot, offset, useWeightColor
             intensitiy = math.sqrt(intensitiy)
             intensitiy = math.sqrt(intensitiy)
 
-            color = (min(255, int(intensitiy * 255)), int(255 - intensitiy * 255), int(255 - intensitiy * 255))
+            color = (min(255, 255 - int(intensitiy * 255)), int(intensitiy * 255), int(255 - intensitiy * 255))
         pygame.draw.circle(shared.window,
                            color,
                            offset + p.position, 10)

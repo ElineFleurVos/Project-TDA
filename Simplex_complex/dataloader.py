@@ -33,6 +33,14 @@ def convert_days_to_datetime(days):
     return result
 
 
+def getLongLatFinalPoint(path):
+    with open(path, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|',)
+        row = csvfile.readlines()[-1].split(sep=',')
+        lat = float(row[0])
+        long = float(row[1])
+        return Vector2(long, -lat)
+
 def getPointsInFile(path, max_points=-1):
     points = []
     r = 0
@@ -138,17 +146,19 @@ def refilter_data(lat, long, radius):
             shutil.copy2(path, 'FilteredData')
 
 
-def refilter_data(filter_left_top: Vector2, filter_right_bottom: Vector2):
+def refilter_data(filter_left_top: Vector2, filter_right_bottom: Vector2, filter_end_points):
     pltPaths = glob.glob(os.getcwd() + '\\Data\\**\\*.plt', recursive=True)
     if os.path.isdir('FilteredData'):
         shutil.rmtree('FilteredData')
 
     os.mkdir('FilteredData')
     for path in pltPaths:
-        # points = getPointsInFile(path)
-        # p1=  points[len(points)-1]
-        for p in getPointsInFile(path, 1):
-            if (filter_left_top.x <= p.LatLongVector.x <= filter_right_bottom.x and
-                    filter_left_top.y <= p.LatLongVector.y <= filter_right_bottom.y):
-                shutil.copy2(path, 'FilteredData')
-                break
+        p: Vector2
+        if filter_end_points:
+            p = getLongLatFinalPoint(path)
+        else:
+            p = getPointsInFile(path, 1)[0].LatLongVector
+
+        if (filter_left_top.x <= p.x <= filter_right_bottom.x and
+                filter_left_top.y <= p.y <= filter_right_bottom.y):
+            shutil.copy2(path, 'FilteredData')

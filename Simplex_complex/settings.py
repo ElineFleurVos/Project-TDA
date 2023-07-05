@@ -9,10 +9,11 @@ analysis_time_slot_interval = timedelta(minutes=5)
 analysis_time_slot_interval_padding = timedelta(minutes=3)
 
 # these values are in long/lat degrees.
-alpha_complex_filtration_value = .0000006
+alpha_complex_filtration_value = .000006
 
 #Vectors are in (lat, -long)
 refilter_data: bool = True
+filter_end_points: bool = False
 max_distance_between_datapoints = .001
 filter_left_top = Vector2(116.3042592145297, -39.99760917976811)
 filter_right_bottom = Vector2(116.31635444177587, -39.985175353300555)
